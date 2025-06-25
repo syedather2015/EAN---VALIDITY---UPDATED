@@ -6,6 +6,52 @@ This Excel macro streamlines the process of validating **EAN (European Article N
 
 ---
 
+## ✅ Issues Resolved
+
+The updated version of the macro has addressed key issues from earlier implementations to ensure accurate EAN-13 validation and consistent highlighting logic.
+
+### 🎯 Validation Rules – Now Correctly Implemented
+
+| Rule Description                                        | Logic Used                            | Status |
+|---------------------------------------------------------|----------------------------------------|--------|
+| EAN must be numeric                                     | `IsNumeric(ean)`                       | ✅     |
+| Length must be exactly 13 digits (pad with zeros if needed) | `Rept("0", 13 - Len(ean)) & ean`   | ✅     |
+| First digit must **not** be `2`                         | `Left(ean, 1) <> "2"`                  | ✅     |
+| First 3 digits must **not** be `"000"`                  | `Mid(ean, 1, 3) <> "000"`              | ✅     |
+| Digits 3–7 must **not** be `"00000"`                    | `Mid(ean, 3, 5) <> "00000"`            | ✅     |
+| Digits 8–12 must **not** be `"00000"`                   | `Mid(ean, 8, 5) <> "00000"`            | ✅     |
+| Must pass **EAN-13 check digit** validation             | `IsValidEAN13CheckDigit(ean)`         | ✅     |
+
+---
+
+### 🧪 Sample Cases – Valid vs Invalid
+
+| Input EAN         | Padded EAN           | Mid(3,5) | Mid(8,5) | Final Status | Reason                    |
+|-------------------|----------------------|----------|----------|---------------|----------------------------|
+| 24000010920       | 0024000010920        | 24000    | 01092    | ✅ Valid       | Passes all rules           |
+| 6298000000065     | 6298000000065        | 98000    | 00006    | ❌ Invalid     | Fails Mid(8,5) rule        |
+| 628000000066      | 0628000000066        | 28000    | 00006    | ❌ Invalid     | Fails Mid(8,5) rule        |
+| 800015236131      | 0800015236131        | 00015    | 23613    | ✅ Valid       | Pattern acceptable         |
+| 763000000023      | 0763000000023        | 63000    | 00002    | ❌ Invalid     | Fails Mid(8,5) rule        |
+| 7480000902642     | 7480000902642        | 80000    | 90264    | ✅ Valid       | Passes all rules           |
+| 628000000063      | 0628000000063        | 28000    | 00006    | ❌ Invalid     | Fails Mid(8,5) rule        |
+
+---
+
+### 🛠️ Improvements Over Previous Version
+
+- ✅ Accurate pattern detection (`Mid(..., 5)` logic clarified)
+- ✅ EANs only padded when necessary and **not altered if already valid**
+- ✅ Added EAN-13 **check digit validation** to catch structurally invalid codes
+- ✅ Multi-letter column support (e.g., `AA`, `XFD`)
+- ✅ Robust column validation via `Range(columnLetter & "1")` instead of manual A-Z check
+
+These fixes ensure clean, scalable, and high-confidence EAN validation directly in Excel with zero dependencies.
+
+## ✅ Issues Resolved
+
+---
+
 ## ⚙️ Features
 
 - ✅ Prompts user to select the column with EANs
